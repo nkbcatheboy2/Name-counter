@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantra Jaap Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #d35400;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #ff7e5f;
+            outline: none;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        #startBtn {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        #startBtn:hover { background-color: #219653; }
+
+        #stopBtn {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        #stopBtn:hover { background-color: #962d22; }
+
+        .status-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 5px solid #d35400;
+            display: flex;
+            justify-content: space-around;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .output-box {
+            background: #fff;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            text-align: left;
+            border: 1px solid #eee;
+        }
+
+        .output-line {
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            background: #fdf2e9;
+            border-radius: 5px;
+            color: #333;
+            font-size: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>✨ Mantra Jaap Generator ✨</h2>
+        
+        <div class="input-group">
+            <label for="nameInput">Enter Name / Mantra:</label>
+            <input type="text" id="nameInput" value="JAY SHREE RAM" placeholder="Type here...">
+        </div>
+
+        <div class="input-group">
+            <label for="timeInput">Interval (Every X Seconds):</label>
+            <input type="number" id="timeInput" value="1" min="0.1" step="0.1">
+        </div>
+
+        <div class="btn-container">
+            <button id="startBtn" onclick="startCounter()">Start Jaap</button>
+            <button id="stopBtn" onclick="stopCounter()">Stop</button>
+        </div>
+
+        <div class="status-card">
+            <div>Target: <span style="color: #d35400;">1008</span></div>
+            <div>Current Count: <span id="currentCount" style="color: #27ae60;">0</span></div>
+        </div>
+    </div>
+
+    <div class="output-box" id="outputBox">
+        </div>
+
+    <script>
+        let intervalId = null;
+        let count = 0;
+        const maxCount = 1008;
+
+        function startCounter() {
+            // Agar pehle se chal raha hai toh rok dein
+            if (intervalId) clearInterval(intervalId);
+
+            const name = document.getElementById('nameInput').value.trim();
+            const seconds = parseFloat(document.getElementById('timeInput').value);
+            const outputBox = document.getElementById('outputBox');
+            const countDisplay = document.getElementById('currentCount');
+
+            if (!name) {
+                alert("Kripya koi naam ya mantra enter karein!");
+                return;
+            }
+
+            if (isNaN(seconds) || seconds <= 0) {
+                alert("Kripya valid seconds enter karein!");
+                return;
+            }
+
+            // Reset UI and counter
+            outputBox.innerHTML = "";
+            count = 0;
+            countDisplay.innerText = count;
+
+            // Convert seconds to milliseconds
+            const milliseconds = seconds * 1000;
+
+            intervalId = setInterval(() => {
+                if (count < maxCount) {
+                    count++;
+                    countDisplay.innerText = count;
+
+                    // Create new print line
+                    const line = document.createElement('div');
+                    line.className = 'output-line';
+                    line.innerText = `${count}. ${name}`;
+                    outputBox.appendChild(line);
+
+                    // Auto scroll to bottom
+                    outputBox.scrollTop = outputBox.scrollHeight;
+                } else {
+                    clearInterval(intervalId);
+                    alert("1008 Times Jaap Completed successfully! 🙏");
+                }
+            }, milliseconds);
+        }
+
+        function stopCounter() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                alert("Counter stopped.");
+            }
+        }
+    </script>
+
+</body>
+</html>
